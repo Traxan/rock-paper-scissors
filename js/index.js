@@ -1,5 +1,6 @@
 var userScore = 0;
 var computerScore = 0;
+var numberOfRounds = 0;
 var userScore_span = document.getElementById("user-score");
 var computerScore_span = document.getElementById("computer-score");
 var scoreBoard_div = document.querySelector(".score-board");
@@ -12,8 +13,10 @@ var choices_div = document.querySelector(".choices");
 var message_p = document.getElementById("message");
 var trophy_p = document.getElementById("numberOfWins");
 var roundsCounter_p = document.getElementById("numberOfRounds");
+var modal_h = document.getElementById("endMessage");
+var userName_div = document.getElementById("user-label");
+var userName;
 var numberOfGames;
-var numberOfRounds = 0;
 
 function main(){
     rock_div.addEventListener('click', function(){
@@ -112,27 +115,47 @@ function lose(userChoice, computerChoice) {
   endGame(numberOfGames, userScore, computerScore);
 }
 
-function thereIsAnError(){
-  	message_p.innerHTML = "Please press NEW GAME and choose the number!";
-	setTimeout(function() {message_p.innerHTML = ""}, 3000);
+function newGame(){
+	newGame_div.addEventListener('click', function(){
+		howManyWins();
+	})
+  	main();
 }
 
 function howManyWins(){
 	var userAnswer = prompt("TILL HOW MANY WINS?");
 		if (userAnswer === null || userAnswer === "" || isNaN(userAnswer)){
-      thereIsAnError();
+      		thereIsAnError();
 		}
 		else {
-      		choices_div.classList.remove('choices-disabled');
-      		newGame_div.classList.add('newGame-disabled');
+			giveMeYourName();
       		resetScore();
 			games(userAnswer);
 		}
 }
 
-function games(userAnswer){
-	trophy_p.innerHTML = "Up to: " + userAnswer;
-    numberOfGames = userAnswer;
+function thereIsAnError(){
+  	message_p.innerHTML = "Please press NEW GAME and choose the number!";
+	setTimeout(function() {message_p.innerHTML = ""}, 3000);
+}
+
+
+function giveMeYourName(){
+	var name = prompt("WHAT IS YOUR NAME?");
+	if (name === null || name === "" || isNaN(name) === false) {
+		thereIsAnError();
+		document.querySelector('#trophy').classList.add('trophydisabled');
+	}
+	else if (name.length > 9){
+		message_p.innerHTML = "Your name is too long. 9 letters summary!";
+	}
+	else {
+		document.querySelector('#trophy').classList.remove('trophydisabled');
+		choices_div.classList.remove('choices-disabled');
+      	newGame_div.classList.add('newGame-disabled');
+		userName_div.innerHTML = name;
+		userName = name;
+	}
 }
 
 function resetScore(){
@@ -141,33 +164,32 @@ function resetScore(){
   	numberOfRounds = 0;
  	userScore_span.innerHTML = userScore;
  	computerScore_span.innerHTML = computerScore;
- 	roundsCounter_p.innerHTML = ""
+ 	roundsCounter_p.innerHTML = "";
 }
 
-function thereIsAnError(){
-  	var noAnswer
-  	noAnswer = "Please press NEW GAME and choose the number!";
-  	message_p.innerHTML = noAnswer;
-	setTimeout(function() {message_p.innerHTML = ""}, 2000);
+function games(userAnswer){
+	trophy_p.innerHTML = "Up to: " + userAnswer;
+    numberOfGames = userAnswer;
 }
 
-function newGame(){
-	newGame_div.addEventListener('click', function(){
-		howManyWins();
-	})
-  main();
-}
 
 function endGame(numberOfGames, userScore, computerScore){
   if (numberOfGames == userScore){
     choices_div.classList.add('choices-disabled');
     newGame_div.classList.remove('newGame-disabled');
-    result_p.innerHTML = "You WON the ENTIRE game!";
+    result_p.innerHTML = "";
+    userName_h = userName;
+    modal_h.innerHTML = userName + "<br>You won the ENTIRE game!";
+    showModal();
   }
   else if(numberOfGames == computerScore){
     choices_div.classList.add('choices-disabled');
     newGame_div.classList.remove('newGame-disabled');
-    result_p.innerHTML = "You LOSE the ENTIRE game!";
+    showModal();
+    result_p.innerHTML = "";
+    userName_h = userName;
+	modal_h.innerHTML = userName + "<br>You lose the ENTIRE game!";
+    showModal();
   }
 }
 
@@ -180,7 +202,7 @@ choices_div.classList.add('choices-disabled');
 
 	var modal = document.getElementById("modal-one");
 	
-	var showModal = function(event){
+	var showModal = function(){
 		event.preventDefault();
 		document.querySelector('#modal-overlay').classList.add('show');
 		modal.classList.add('show'); //2
