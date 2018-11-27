@@ -1,13 +1,8 @@
-var userScore = 0;
-var computerScore = 0;
-var numberOfRounds = 0;
 var userScore_span = document.getElementById("user-score");
 var computerScore_span = document.getElementById("computer-score");
 var scoreBoard_div = document.querySelector(".score-board");
 var result_p = document.querySelector(".result > p");
-var rock_div = document.getElementById("Rock");
-var paper_div = document.getElementById("Paper");
-var scissors_div = document.getElementById("Scissors");
+var moveButtons = document.querySelectorAll("[data-move]");
 var newGame_div = document.querySelector(".newGame");
 var choices_div = document.querySelector(".choices");
 var message_p = document.getElementById("message");
@@ -17,55 +12,44 @@ var modal_h = document.getElementById("endMessage");
 var userName_div = document.getElementById("user-label");
 var userName;
 var numberOfGames;
+var params = {
+	userScore: 0,
+	computerScore: 0,
+	numberOfRounds: 0,
+	progress: []
+}
+
 
 function main(){
-    rock_div.addEventListener('click', function(){
-      game("Rock");
-    })
+  moveButtons.forEach(function(button) {
+    var userChoice = button.dataset.move;
 
-    paper_div.addEventListener('click', function(){
-      game("Paper");
-    })
-
-    scissors_div.addEventListener('click', function(){
-      game("Scissors");
-    })
+    button.addEventListener('click', function(){
+      game(userChoice);
+    });
+  });
 }
 
 function game(userChoice) {
+
 	var computerChoice = getComputerChoice();
-	if (userChoice === "Rock"){
-		if (computerChoice === "Rock") {
+
+	switch(userChoice + computerChoice) {
+		case "RockRock":
+		case "PaperPaper":
+		case "ScissorsScissors":
 			draw(userChoice, computerChoice);
-		}
-		else if (computerChoice === "Paper"){
-			lose(userChoice, computerChoice);
-		}
-		else {
+			break;
+		case "RockScissors":
+		case "PaperRock":
+		case "ScissorsPaper":
 			win(userChoice, computerChoice);
-		}
-	}
-	else if (userChoice === "Paper"){
-		if (computerChoice === "Paper") {
-			draw(userChoice, computerChoice);
-		}
-		else if (computerChoice === "Rock"){
-			win(userChoice, computerChoice);
-		}
-		else {
+			break;
+		case "RockPaper":
+		case "PaperScissors":
+		case "ScissorsRock":
 			lose(userChoice, computerChoice);
-		}
-	}
-	else{
-		if (computerChoice === "Scissors") {
-			draw(userChoice, computerChoice);
-		}
-		else if (computerChoice === "Rock"){
-			lose(userChoice, computerChoice);
-		}
-		else {
-			win(userChoice, computerChoice);
-		}
+			break;
 	}
 }
 
@@ -76,10 +60,10 @@ function getComputerChoice() {
 }
 
 function draw(userChoice, computerChoice) {
- 	numberOfRounds++;
-  	roundsCounter_p.innerHTML = "Number of rounds: " + numberOfRounds;
-	computerScore_span.innerHTML = computerScore;
-	userScore_span.innerHTML = userScore;
+ 	params.numberOfRounds++;
+  	roundsCounter_p.innerHTML = "Number of rounds: " + params.numberOfRounds;
+	computerScore_span.innerHTML = params.computerScore;
+	userScore_span.innerHTML = params.userScore;
 	var smallerUserWord = "user ".fontsize(4);
 	var smallerCompWord = " comp".fontsize(4);
 	result_p.innerHTML = smallerUserWord + userChoice + " vs " + computerChoice + smallerCompWord + "<br>It is a draw!";
@@ -88,31 +72,31 @@ function draw(userChoice, computerChoice) {
 }
 
 function win(userChoice, computerChoice) {
-  	numberOfRounds++;
-  	roundsCounter_p.innerHTML = "Number of rounds: " + numberOfRounds;
-  	userScore++;
-	userScore_span.innerHTML = userScore;
-	computerScore_span.innerHTML = computerScore;
+  	params.numberOfRounds++;
+  	roundsCounter_p.innerHTML = "Number of rounds: " + params.numberOfRounds;
+  	params.userScore++;
+	userScore_span.innerHTML = params.userScore;
+	computerScore_span.innerHTML = params.computerScore;
 	var smallerUserWord = "user ".fontsize(4);
 	var smallerCompWord = " comp".fontsize(4);
 	result_p.innerHTML = smallerUserWord + userChoice + " vs " + computerChoice + smallerCompWord + "<br>You won!";
 	document.getElementById(userChoice).classList.add('green-glow');
 	setTimeout(function() {document.getElementById(userChoice).classList.remove('green-glow')}, 400);
-  endGame(numberOfGames, userScore, computerScore);
+  endGame();
 }
 
 function lose(userChoice, computerChoice) {
-  	numberOfRounds++;
-  	roundsCounter_p.innerHTML = "Number of rounds: " + numberOfRounds;
- 	computerScore++;
-	computerScore_span.innerHTML = computerScore;
-	userScore_span.innerHTML = userScore;
+  	params.numberOfRounds++;
+  	roundsCounter_p.innerHTML = "Number of rounds: " + params.numberOfRounds;
+ 	params.computerScore++;
+	computerScore_span.innerHTML = params.computerScore;
+	userScore_span.innerHTML = params.userScore;
 	var smallerUserWord = "user ".fontsize(4);
 	var smallerCompWord = " comp".fontsize(4);
 	result_p.innerHTML = smallerUserWord + userChoice + " vs " + computerChoice + smallerCompWord + "<br>You lost!";
 	document.getElementById(userChoice).classList.add('red-glow');
 	setTimeout(function() {document.getElementById(userChoice).classList.remove('red-glow')}, 400);
-  endGame(numberOfGames, userScore, computerScore);
+  endGame();
 }
 
 function newGame(){
@@ -159,11 +143,11 @@ function giveMeYourName(){
 }
 
 function resetScore(){
-	userScore = 0;
-	computerScore = 0;
-  	numberOfRounds = 0;
- 	userScore_span.innerHTML = userScore;
- 	computerScore_span.innerHTML = computerScore;
+	params.userScore = 0;
+	params.computerScore = 0;
+  	params.numberOfRounds = 0;
+ 	userScore_span.innerHTML = params.userScore;
+ 	computerScore_span.innerHTML = params.computerScore;
  	roundsCounter_p.innerHTML = "";
 }
 
@@ -173,8 +157,8 @@ function games(userAnswer){
 }
 
 
-function endGame(numberOfGames, userScore, computerScore){
-  if (numberOfGames == userScore){
+function endGame(){
+  if (numberOfGames == params.userScore){
     choices_div.classList.add('choices-disabled');
     newGame_div.classList.remove('newGame-disabled');
     result_p.innerHTML = "";
@@ -182,7 +166,7 @@ function endGame(numberOfGames, userScore, computerScore){
     modal_h.innerHTML = userName + "<br>You won the ENTIRE game!";
     showModal();
   }
-  else if(numberOfGames == computerScore){
+  else if(numberOfGames == params.computerScore){
     choices_div.classList.add('choices-disabled');
     newGame_div.classList.remove('newGame-disabled');
     showModal();
