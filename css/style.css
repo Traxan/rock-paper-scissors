@@ -189,7 +189,7 @@ header > h1 {
 .modal {
   display: none;
   background: #fff;
-  width: 400px;
+  width: 800px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -211,6 +211,15 @@ header > h1 {
   padding: 5px;
   color: #000;
   text-decoration: none;
+}
+
+.modal table {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.modal table th {
+  padding: 20px;
 }
 
 /*# sourceMappingURL=style.css.map */
